@@ -6,9 +6,9 @@ const bodyParser = require('body-parser');
 // Our array of students
 let students = ['Caleb', 'Dave', "Fred"];
 // Our array of todos
-let todos = [{id: 0, task: "Do this", done: false}];
+let todos = [{id: 0, task: "Do this", done: false}, {id: 1, task: "Do that", done: false}];
 
-let currentId = 0;
+let currentId = 1;
 
 // BodyParser to make it easy to read POST data
 app.use(bodyParser.json());
@@ -33,7 +33,7 @@ app.get('/api/todos', function(req, res) {
   res.send(todos);
 });
 
-// Get todo by ID
+// GET todo by ID
 app.get('/api/todos/:id', function(req, res) {
   res.send(todos.filter((task) => {
     return task.id === parseInt(req.params.id)
@@ -52,6 +52,21 @@ app.post('/api/todos', function(req, res) {
   // Send user a list of todos
   res.send(todos);
 })
+
+// EDIT todo by :id
+app.put('/api/todos/:id', (req, res) => {
+  req.body.id = parseInt(req.params.id);
+  todos[req.params.id] = req.body
+  res.send(todos[req.params.id]);
+});
+
+// DELETE todo by :id
+app.delete('/api/todos/:id', function(req, res) {
+  todos = todos.filter((task) => {
+    return task.id !== parseInt(req.params.id)
+  })
+  res.send(todos)
+});
 
 // All other urls - 404
 app.use(function (req, res, next) {
