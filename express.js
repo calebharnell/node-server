@@ -6,16 +6,18 @@ const bodyParser = require('body-parser');
 // Our array of students
 let students = ['Caleb', 'Dave', "Fred"];
 // Our array of todos
-let todos = [{task: "Do this", done: false}, {task: "Do that", done: true}]
+let todos = [{id: 0, task: "Do this", done: false}];
+
+let currentId = 0;
 
 // BodyParser to make it easy to read POST data
-app.use(bodyParser.json())
+app.use(bodyParser.json());
 
 // GET /students
 app.get('/students', function(req, res) {
   // Send user a list of students
   res.send(students);
-})
+});
 
 // POST /students
 app.post('/students', function(req, res) {
@@ -23,25 +25,37 @@ app.post('/students', function(req, res) {
   students.push(req.body.name)
   // Send user a list of students
   res.send(students);
-})
+});
 
 // GET /todos
-app.get('/todos', function(req, res) {
+app.get('/api/todos', function(req, res) {
   // Send user a list of todos
   res.send(todos);
-})
+});
+
+// Get todo by ID
+app.get('/api/todos/:id', function(req, res) {
+  res.send(todos.filter((task) => {
+    return task.id === parseInt(req.params.id)
+  }))
+});
 
 // POST /todos
-app.post('/todos', function(req, res) {
-  // Add new todo to array
-  todos.push(req.body)
+app.post('/api/todos', function(req, res) {
+  // Define new task
+  let newTask = {};
+  newTask = req.body;
+  // Increment new task id from current id
+  newTask.id = ++currentId;
+  // Add new task to Array
+  todos.push(newTask);
   // Send user a list of todos
   res.send(todos);
 })
 
 // All other urls - 404
 app.use(function (req, res, next) {
-  res.status(404).send("Sorry can't find that!")
+  res.status(404).send("Sorry can't find that!");
 })
 
 // Listen on our specified port
